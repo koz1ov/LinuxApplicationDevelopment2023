@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <errno.h>
 
-#define BUF_SIZE 1024
 #define BAD_IN_READ 4
 #define BAD_OUT_WRITE 5
 
@@ -45,6 +43,7 @@ int main(int argc, char *argv[]) {
 
   fclose(in_file); 
   if (fclose(out_file)) {
+    remove(to_filename);
     return 7;
   }
   remove(from_filename);
