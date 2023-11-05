@@ -23,33 +23,33 @@ test: move remove.so
 	# open input file fault
 	cp check.test in_file.test
 	strace -e openat -P in_file.test -e fault=openat:error=EACCES \
-	./move in_file.test out_file.test > /dev/null 2>&1 || ./cmp_codes.sh 2 "$$?"
+	./move in_file.test out_file.test > /dev/null 2>&1 || test 2 = "$$?"
 	test ! -s out_file.test
 	
 	# open output file fault
 	cp check.test in_file.test
 	strace -e openat -P out_file.test -e fault=openat:error=EACCES \
-	./move in_file.test out_file.test > /dev/null 2>&1 ||  ./cmp_codes.sh 3 "$$?"
+	./move in_file.test out_file.test > /dev/null 2>&1 ||  test 3 = "$$?"
 	test ! -s out_file.test
 	
 	# read inupt file fault
 	cp check.test in_file.test
 	strace -e read -P in_file.test -e fault=read:error=EIO \
-	./move in_file.test out_file.test > /dev/null 2>&1 || ./cmp_codes.sh 4 "$$?"
+	./move in_file.test out_file.test > /dev/null 2>&1 || test 4 = "$$?"
 	test -s in_file.test
 	test ! -s out_file.test
 	
 	# write out file fault
 	cp check.test in_file.test
 	strace -e write -e fault=write:error=EIO \
-	./move in_file.test out_file.test > /dev/null 2>&1 || ./cmp_codes.sh 5 "$$?"
+	./move in_file.test out_file.test > /dev/null 2>&1 || test 5 = "$$?"
 	test -s in_file.test
 	test ! -s out_file.test
 	
 	# close out file fault
 	cp check.test in_file.test
 	strace -e close -e fault=close:error=EIO:when=4 \
-  ./move in_file.test out_file.test > /dev/null 2>&1 || ./cmp_codes.sh 7 "$$?"
+  ./move in_file.test out_file.test > /dev/null 2>&1 || test 7 = "$$?"
 	test -s in_file.test
 	test ! -s out_file.test
 

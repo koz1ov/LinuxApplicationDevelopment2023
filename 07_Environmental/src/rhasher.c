@@ -12,7 +12,7 @@
 #endif
 
 int parse_algorithm(char* cmd) {
-  if (!strcmp(cmd, "MD5"))
+  if (!strcasecmp(cmd, "MD5"))
     return RHASH_MD5;
   if (!strcasecmp(cmd, "SHA1"))
     return RHASH_SHA1;
@@ -40,6 +40,12 @@ void print_hash(const char* in, unsigned int algorithm, int output_mode) {
   printf("%s\n", out);
 }
 
+void reset(char **input, size_t* len) {
+  free(*input); 
+  *input = NULL;
+  *len = 0;
+}
+
 int main(int argc, char const *argv[]) {
   rhash_library_init();
   size_t len = 0;
@@ -51,9 +57,14 @@ int main(int argc, char const *argv[]) {
   while (getline(&input, &len, stdin) != -1) {
   #endif
     char* str_algorithm = strtok(input, " \n");
+    if (!str_algorithm) {
+      reset(&input, &len);
+      continue;
+    }
     int algorithm = parse_algorithm(str_algorithm);
     if (algorithm == -1) {
      fprintf(stderr, "Unknown algorithm\n");
+     reset(&input, &len);
      continue;
     }
 
@@ -61,10 +72,12 @@ int main(int argc, char const *argv[]) {
     char* in = strtok(NULL, " \n");
     if (!in) {
      fprintf(stderr, "Empty string\n");
+     reset(&input, &len);
      continue;
     }
 
     print_hash(in, algorithm, output_mode);
+    reset(&input, &len);
   }
 
   return 0;
